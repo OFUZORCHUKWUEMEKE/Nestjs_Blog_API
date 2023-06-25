@@ -6,17 +6,22 @@ import { Observable ,from} from 'rxjs'
 export class UserController {
     constructor(private userService: UserService) { }
     @Get()
-    findAll(): Observable<User[]> {
-        return this.userService.findAll()
+    async findAll(): Promise<User[]> {
+        return await this.userService.findAll()
     }
     @Post()
-    create(@Body() body: User): Observable<User> {
-        return this.userService.create(body)
+    async create(@Body() body: User) {
+        return await this.userService.create(body)
     }
 
     @Get(':id')
     async findOne(@Param('id') id:number) {
         return await this.userService.findOne(id)
+    }
+
+    @Post('/login')
+    login(@Body() user:User){
+       return this.userService.login(user)
     }
      
     @Delete(':id')

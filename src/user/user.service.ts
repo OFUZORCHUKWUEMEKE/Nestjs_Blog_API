@@ -8,7 +8,7 @@ import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>, private authService: AuthService) { }
+    constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>, private authService: AuthService) {}
 
     async create(user: User): Promise<any> {
         const alreadyExist = await this.userRepository.find({ where: { email: user.email } })
@@ -31,17 +31,13 @@ export class UserService {
         return payload
     }
 
-    async findAll(): Promise<any> {
+    async findAll(): Promise<any>{
         const users = await this.userRepository.find()
-
         return users.forEach((v) => { delete v.password })
-
     }
 
     async findOne(id: number) {
         const user = await this.userRepository.findBy({ id })
-
-
     }
 
     deleteOne(id: number): Observable<any> {
@@ -54,21 +50,21 @@ export class UserService {
         return from(this.userRepository.update(id, user))
     }
 
-    async login(user:User){
-         const validUser = await this.validateUser(user.email,user.password)
-         if(!validUser) throw new HttpException('Wrong Credentials',400)
-         return this.authService.generateJWT(user)
+    async login(user: User) {
+        const validUser = await this.validateUser(user.email, user.password)
+        if (!validUser) throw new HttpException('Wrong Credentials', 400)
+        return this.authService.generateJWT(user)
     }
 
-    async validateUser(email: string, password: string){
-        const user = await this.userRepository.findOne({where:{email}})
-        if(!user){
-            throw new HttpException('Email Not fOUND',400)
+    async validateUser(email: string, password: string) {
+        const user = await this.userRepository.findOne({ where: { email } })
+        if (!user) {
+            throw new HttpException('Email Not fOUND', 400)
         }
-        const correctPassword = await this.authService.comparePassword(password,user.password)
-        if(!correctPassword) throw new HttpException('Invalid Credentials' ,400)
+        const correctPassword = await this.authService.comparePassword(password, user.password)
+        if (!correctPassword) throw new HttpException('Invalid Credentials', 400)
         delete user.password
-        return  user;
+        return user;
     }
 
     async findByMail(email: string) {
